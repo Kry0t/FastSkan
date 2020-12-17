@@ -10,10 +10,10 @@ Esta herramienta fue principalmente diseñada para analizar máquinas boot2root 
 
 ![alt text](https://github.com/Kry0t/FastSkan/blob/main/images/1.png)
 
-* -s IP 
-* -w Diccionario para fuzzear directorios
-* -n Nombre Servidor
-* -h Panel de Ayuda
+* **-s** IP 
+* **-w** Diccionario para fuzzear directorios
+* **-n** Nombre Servidor
+* **-h** Panel de Ayuda
 
 
 Tras ejecutar el script veremos que esta corrobara que se tengan instaladas las aplicaciones necesarias.
