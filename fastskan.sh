@@ -17,16 +17,16 @@ export DEBIAN_FRONTEND=noninteractive
 trap ctrl_c INT
 
 function ctrl_c(){
-	echo -e "\n${redColour}[*] Cancelado${endColour}\n"
+	echo -e "\n${redColour}[*] Cancelled${endColour}\n"
 	tput cnorm; exit 0
 }
 
 function helpPanel(){
-	echo -e "\n${purpleColour}[*]${endColour}${grayColour} Uso: ./fastscan.sh${endColour}"
+	echo -e "\n${purpleColour}[*]${endColour}${grayColour} Uso: ./fastskan.sh${endColour}"
 	echo -e "\n\t${yellowColour}[-s]${endColour} Server IP"
 	echo -e "\t${yellowColour}[-w]${endColour} Wordlist"
 	echo -e "\t${yellowColour}[-n]${endColour} Box Name"
-	echo -e "\n${purpleColour}[Example]${endColour} ./fastscan.sh -s 10.10.10.10 -w wordlist.txt -n Jerry"
+	echo -e "\n${purpleColour}[Example]${endColour} ./fastskan.sh -s 10.10.10.10 -w wordlist.txt -n Jerry"
 	exit 0
 }
 
@@ -66,7 +66,7 @@ function startAttack(){
 
 	echo -e "\n${purpleColour}[*] Starting Fast Enumeration${endColour}\n"
 	echo -e "${yellowColour}[*]${endColour} Open Ports"; nmap -F $ip | grep -i "open"
-	echo -e "\n${purpleColour}[*] Starting Nmap Complete Scan${endColour}\n"
+	echo -e "\n${purpleColour}[*] Starting Nmap Complete Skan${endColour}\n"
 	mkdir ${name}
 	cd ${name}
 	mkdir FastSkan
@@ -76,10 +76,10 @@ function startAttack(){
 	echo -e "\n${purpleColour}[*] Fuzzing Directories${endColour}\n"
 	gobuster dir -u $ip -w $wordlist -o ${name}dirs -t 50 > /dev/null 
 	echo -e "${yellowColour}[*]${endColour} File ${name}dirs created"
-	echo -e "\n${purpleColour}[*] Starting WhatWeb Scan${endColour}\n"
+	echo -e "\n${purpleColour}[*] Starting WhatWeb Skan${endColour}\n"
 	whatweb $ip > ${name}whatweb
 	echo -e "${yellowColour}[*]${endColour} File ${name}whatweb created"
-	echo -e "\n${greenColour}[*] Successful Scan${endColour}\n"
+	echo -e "\n${greenColour}[*] Successful Skan${endColour}\n"
 
 }
 
@@ -104,7 +104,7 @@ if [ "$(id -u)" == "0" ];then
 		tput cnorm
 	fi
 else
-	echo -e "\n${redColour}[*] Necesitas ser root${endColour}\n"
+	echo -e "\n${redColour}[*] You need to be root${endColour}\n"
 fi
 
 
