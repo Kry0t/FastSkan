@@ -13,7 +13,7 @@ Esta herramienta fue principalmente diseñada para analizar máquinas boot2root 
 * -s IP 
 * -w Diccionario para fuzzear directorios
 * -n Nombre Servidor
-
+* -h Panel de Ayuda
 
 
 Tras ejecutar el script veremos que esta corrobara que se tengan instaladas las aplicaciones necesarias.
