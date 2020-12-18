@@ -23,6 +23,7 @@ Si todo esta correcto iniciara el escaneo de puertos con nmap, indicandonos en p
 Luego continuara haciendo un fuzzeo de directorios y realizando un reconocimiento de tecnologias utilizadas en el sitio web.
 
 ![alt text](https://github.com/Kry0t/FastSkan/blob/main/images/2.png)
+![alt text](https://github.com/Kry0t/FastSkan/blob/main/images/3.png)
 
 
 
