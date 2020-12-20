@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 #Colours
 declare -r greenColour="\e[0;32m\033[1m"
 declare -r endColour="\033[0m\e[0m"
@@ -22,17 +20,17 @@ function ctrl_c(){
 }
 
 function helpPanel(){
-	echo -e "\n${purpleColour}[*]${endColour}${grayColour} Uso: ./fastskan.sh${endColour}"
+	echo -e "\n${purpleColour}[*]${endColour}${grayColour} Uso: ./fastskan${endColour}"
 	echo -e "\n\t${yellowColour}[-s]${endColour} Server IP"
 	echo -e "\t${yellowColour}[-w]${endColour} Wordlist"
 	echo -e "\t${yellowColour}[-n]${endColour} Box Name"
-	echo -e "\n${purpleColour}[Example]${endColour} ./fastskan.sh -s 10.10.10.10 -w wordlist.txt -n Jerry"
+	echo -e "\n${purpleColour}[Example]${endColour} ./fastskan -s 10.10.10.10 -w wordlist.txt -n Jerry"
 	exit 0
 }
 
 function dependencies(){
 	tput civis
-	clear; dependencies=(nmap gobuster whatweb)
+	clear; dependencies=(nmap gobuster whatweb smbclient rpcclient rpcinfo ldapsearch enum4linux)
 
   	 echo -e "${yellowColour}
   ______        _      _____ _               
@@ -56,44 +54,184 @@ function dependencies(){
 			echo -e "${greenColour}Installed${endColour}"
 		else
 			echo -e "${redColour}Not Installed${endColour}"
-			echo -e "\n${yellowColour}[*]${endColour} Please install $program to continue"
-			exit 0
-		fi; sleep 0.5
+			echo -e "\n${redColour}[*]${endColour} Please install $program for a complete skan"
+			sleep 1
+		fi; sleep 1
 	done
 }
 
 function startAttack(){
 
-	echo -e "\n${purpleColour}[*] Starting Fast Enumeration${endColour}\n"
-	echo -e "${yellowColour}[*]${endColour} Open Ports"; nmap -F -Pn $ip | grep -i "open" 
-	echo -e "\n${purpleColour}[*] Starting Nmap Complete Skan${endColour}\n"
+	sleep 1;tput reset
+	echo -e "${yellowColour}
+  ______        _      _____ _               
+ |  ____|      | |    / ____| |              
+ | |__ __ _ ___| |_  | (___ | | ____ _ _ __  
+ |  __/ _' / __| __|  \___ \| |/ / _' | '_ \ 
+ | | | (_| \__ \ |_   ____) |   < (_| | | | |
+ |_|  \__,_|___/\__| |_____/|_|\_\__,_|_| |_|              
+		${endColour}"
+	echo -e "- by ${yellowColour}K${endColour}ryot\n"
+	echo -e "\n${purpleColour}[*] Starting Nmap Fast Skan${endColour}\n"
+	echo -e "${yellowColour}[*]${endColour} Open Ports"; nmap -F $ip | grep -i "open" 
+	echo -e "\n${purpleColour}[*] Starting Nmap Normal Skan${endColour}\n"
 	mkdir ${name}
 	cd ${name}
 	mkdir FastSkan
 	cd FastSkan
-	nmap -sV -Pn -sC $ip -o ${name}Nmap > /dev/null 2>&1
+	nmap -sV -sC $ip -oN ${name}Nmap | grep -i "open" | cut -d '/' -f1 > /dev/null 2>&1 >> fast.txt
 	echo -e "${yellowColour}[*]${endColour} File ${name}Nmap created"
 	
-	if [[ $(nmap -F $ip | grep -i "open" | cut -d '/' -f1) =~ "80" ]]; then
+#PORT80
+
+	if [[ $(cat fast.txt) =~ "80" ]]; then
 		
-		touch port80
+		echo -e "\n${purpleColour}[*] Starting Port 80 Enumeration${endColour}"
+		
 		echo -e "$(tput setaf 3)·······················································" >> port80
 		echo -e "GOBUSTER - DIRS FOUND" >> port80
 		echo -e "·······················································$(tput sgr 0)" >> port80
-		echo -e "\n${purpleColour}[*] Fuzzing Directories${endColour}\n"	
+		echo -e "\n${yellowColour}  [*] Fuzzing Directories${endColour}\n"	
 		gobuster dir -u $ip -w $wordlist -t 50 | grep -i "Status" >> port80
-		echo -e "${yellowColour}[*]${endColour} GoBuster Completed"
-		echo -e "\n${purpleColour}[*] Starting WhatWeb Skan${endColour}\n"
+		
+		echo -e "\n${yellowColour}  [*] Starting WhatWeb Skan${endColour}\n"
 		echo -e "\n " >> port80
 		echo -e "$(tput setaf 3)·······················································" >> port80
 		echo -e "WHATWEB - TECNOLOGIES FOUND" >> port80
 		echo -e "·······················································$(tput sgr 0)" >> port80
 		whatweb $ip >> port80
-		echo -e "${yellowColour}[*]${endColour} WhatWeb Completed"
+		
+		echo -e "\n${yellowColour}  [*] Nmap HTTP Enum${endColour}\n"
+		echo -e "\n " >> port80
+		echo -e "$(tput setaf 3)·······················································" >> port80
+		echo -e "NMAP - HTTP ENUM" >> port80
+		echo -e "·······················································$(tput sgr 0)" >> port80
+		nmap -sV --script=http-enum -p 80 $ip >> port80
 
 		
 	fi
 
+#PORT111
+
+	if [[ $(cat fast.txt) =~ "111" ]]; then
+		
+		echo -e "\n${purpleColour}[*] Starting Port 111 Enumeration${endColour}"
+		
+		#echo -e "\n${yellowColour}  [*] Rpcclient Enum${endColour}"
+		#echo -e "$(tput setaf 3)·······················································" >> port111
+		#echo -e "RPCCLIENT - ENUM" >> port111
+		#echo -e "·······················································$(tput sgr 0)" >> port111
+		#rpcclient -U "" -N $ip >> port111
+		
+		echo -e "\n${yellowColour}  [*] Rpcinfo Enum${endColour}"
+		echo -e "$(tput setaf 3)·······················································" >> port111
+		echo -e "RPCINFO - ENUM" >> port111
+		echo -e "·······················································$(tput sgr 0)" >> port111
+		rpcinfo -p $ip >> port111
+		
+		
+	fi
+
+#PORT135
+
+	if [[ $(cat fast.txt) =~ "135" ]]; then
+		
+		echo -e "\n${purpleColour}[*] Starting Port 135 Enumeration${endColour}"
+		
+		#echo -e "\n${yellowColour}  [*] Rpcclient Enum${endColour}"
+		#echo -e "$(tput setaf 3)·······················································" >> port135
+		#echo -e "RPCCLIENT - ENUM" >> port135
+		#echo -e "·······················································$(tput sgr 0)" >> port135
+		#rpcclient -U "" -N $ip >> port135
+		
+		echo -e "\n${yellowColour}  [*] Nmap MSRPC Script Enum${endColour}"
+		echo -e "$(tput setaf 3)·······················································" >> port135
+		echo -e "NMAP - MSRPC ENUM" >> port135
+		echo -e "·······················································$(tput sgr 0)" >> port135
+		nmap -p 135 --script=msrpc-enum $ip > /dev/null 2>&1 >> port135
+		
+		
+	fi
+#PORT139
+
+	if [[ $(cat fast.txt) =~ "139" ]]; then
+		
+		echo -e "\n${purpleColour}[*] Starting Port 139 Enumeration${endColour}"
+		
+		echo -e "\n${yellowColour}  [*] Nmap SMB Script Enum${endColour}"
+		echo -e "$(tput setaf 3)·······················································" >> port139
+		echo -e "NMAP - SMB ENUM" >> port139
+		echo -e "·······················································$(tput sgr 0)" >> port139
+		nmap --script smb-enum-*,smb-vuln-*,smb-ls.nse,smb-mbenum.nse,smb-os-discovery.nse,smb-print-text.nse,smb-psexec.nse,smb-security-mode.nse,smb-server-stats.nse,smb-system-info.nse,smb-protocols -p 139 $ip >> port139
+		
+		echo -e "\n${yellowColour}  [*] Smbclient Enum${endColour}"
+		echo -e "\n " >> port139
+		echo -e "$(tput setaf 3)·······················································" >> port139
+		echo -e "SMBCLIENT - SHARES" >> port139
+		echo -e "·······················································$(tput sgr 0)" >> port139
+		smbclient -N -L //$ip >> port139
+		
+		echo -e "\n${yellowColour}  [*] Enum4Linux${endColour}"
+		echo -e "\n " >> port139
+		echo -e "$(tput setaf 3)·······················································" >> port139
+		echo -e "ENUM4LINUX - COMPLETE ENUM" >> port139
+		echo -e "·······················································$(tput sgr 0)" >> port139
+		enum4linux -a $ip >> port139
+		
+	fi
+	
+#PORT389
+
+	if [[ $(cat fast.txt) =~ "389" ]]; then
+		
+		echo -e "\n${purpleColour}[*] Starting Port 389 Enumeration${endColour}"
+		
+		echo -e "\n${yellowColour}  [*] LdapSearch Naming Contexts${endColour}"
+		echo -e "$(tput setaf 3)·······················································" >> port389
+		echo -e "LDAPSEARCH - DOMAIN NAME" >> port389
+		echo -e "·······················································$(tput sgr 0)" >> port389
+		ldapsearch -x -h $ip -s base | grep rootDomainNamingContext | cut -d ' ' -f2 >> port389
+		
+		echo -e "\n${yellowColour}  [*] Dumping Posible Domain${endColour}"
+		echo -e "\n " >> port389
+		echo -e "$(tput setaf 3)·······················································" >> port389
+		echo -e "LDAPSEARCH - DUMPING DOMAIN" >> port389
+		echo -e "·······················································$(tput sgr 0)" >> port389
+		ldapsearch -x -h $ip -s sub -b $(ldapsearch -x -h $ip -s base | grep rootDomainNamingContext | cut -d ' ' -f2) >> port389
+		
+	fi
+	
+#PORT445
+
+	if [[ $(cat fast.txt) =~ "445" ]]; then
+		
+		echo -e "\n${purpleColour}[*] Starting Port 445 Enumeration${endColour}"
+		
+		echo -e "\n${yellowColour}  [*] Nmap SMB Script Enum${endColour}"
+		echo -e "$(tput setaf 3)·······················································" >> port445
+		echo -e "NMAP - SMB ENUM" >> port445
+		echo -e "·······················································$(tput sgr 0)" >> port445
+		nmap --script smb-enum-*,smb-vuln-*,smb-ls.nse,smb-mbenum.nse,smb-os-discovery.nse,smb-print-text.nse,smb-psexec.nse,smb-security-mode.nse,smb-server-stats.nse,smb-system-info.nse,smb-protocols -p 445 $ip > /dev/null 2>&1 >> port445
+		
+		echo -e "\n${yellowColour}  [*] Smbclient Enum${endColour}"
+		echo -e "\n " >> port445
+		echo -e "$(tput setaf 3)·······················································" >> port445
+		echo -e "SMBCLIENT - SHARES" >> port445
+		echo -e "·······················································$(tput sgr 0)" >> port445
+		smbclient -N -L //$ip >> port445
+		
+		echo -e "\n${yellowColour}  [*] Enum4Linux${endColour}"
+		echo -e "\n " >> port445
+		echo -e "$(tput setaf 3)·······················································" >> port445
+		echo -e "ENUM4LINUX - COMPLETE ENUM" >> port445
+		echo -e "·······················································$(tput sgr 0)" >> port445
+		enum4linux -a $ip >> port445
+		
+	fi
+	
+	rm fast.txt
+	cd ../..
+	chown -R $(whoami):$(whoami) $name
 	echo -e "\n${greenColour}[*] Successful Skan${endColour}\n"
 	
 
@@ -102,23 +240,25 @@ function startAttack(){
 #Main
 
 
-
-declare -i parameter_counter=0; while getopts ":s:w:h:n:" arg; do
-	case $arg in
-		s) ip=$OPTARG; let parameter_counter+=1;;
-		w) wordlist=$OPTARG; let parameter_counter+=1;;
-		h) helpPanel;;
-		n) name=$OPTARG ; parameter_counter+=1;;
-	esac
-done
+if [ "$(id -u)" == "0" ]; then
+	declare -i parameter_counter=0; while getopts ":s:w:h:n:" arg; do
+		case $arg in
+			s) ip=$OPTARG; let parameter_counter+=1;;
+			w) wordlist=$OPTARG; let parameter_counter+=1;;
+			h) helpPanel;;
+			n) name=$OPTARG ; parameter_counter+=1;;
+		esac
+	done
 	
-if [ $parameter_counter -ne 3 ]; then
-	helpPanel
+	if [ $parameter_counter -ne 3 ]; then
+		helpPanel
+	else
+		dependencies
+		startAttack
+		tput cnorm
+	fi
 else
-	dependencies
-	startAttack
-	tput cnorm
+	echo -e "\n${redColour}[*] You need to be root${endColour}\n"
 fi
-
 
 
