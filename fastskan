@@ -22,11 +22,11 @@ function ctrl_c(){
 }
 
 function helpPanel(){
-	echo -e "\n${purpleColour}[*]${endColour}${grayColour} Uso: ./fastskan${endColour}"
+	echo -e "\n${purpleColour}[*]${endColour}${grayColour} Uso: ./fastskan.sh${endColour}"
 	echo -e "\n\t${yellowColour}[-s]${endColour} Server IP"
 	echo -e "\t${yellowColour}[-w]${endColour} Wordlist"
 	echo -e "\t${yellowColour}[-n]${endColour} Box Name"
-	echo -e "\n${purpleColour}[Example]${endColour} ./fastskan -s 10.10.10.10 -w wordlist.txt -n Jerry"
+	echo -e "\n${purpleColour}[Example]${endColour} ./fastskan.sh -s 10.10.10.10 -w wordlist.txt -n Jerry"
 	exit 0
 }
 
