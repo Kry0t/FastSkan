@@ -230,15 +230,11 @@ function startAttack(){
 	fi
 	
 	rm fast.txt
-	cd ../..
-	chown -R $(whoami):$(whoami) $name
 	echo -e "\n${greenColour}[*] Successful Skan${endColour}\n"
-	
 
 }
 
 #Main
-
 
 if [ "$(id -u)" == "0" ]; then
 	declare -i parameter_counter=0; while getopts ":s:w:h:n:" arg; do
@@ -255,6 +251,7 @@ if [ "$(id -u)" == "0" ]; then
 	else
 		dependencies
 		startAttack
+		notify-send "Hey," "Fast-Skan has ended"
 		tput cnorm
 	fi
 else
