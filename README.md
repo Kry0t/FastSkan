@@ -2,14 +2,6 @@
 
 Fast Skan es una herramienta muy sencilla hecha en bash con la finalidad de automatizar el proceso de reconocimiento de una máquina. Fue principalmente diseñada para analizar máquinas boot2root de plataformas como HackTheBox o TryHackMe.
 
-## Instalación
-> ℹ️ Para un uso optimo recomiendo agregar el ejecutable al PATH
-
-
-* `cd /bin`
-* `sudo wget https://raw.githubusercontent.com/Kry0t/FastSkan/main/fastskan`
-* `sudo fastskan`
-
 ## ¿Como utilizar Fast Skan?
 
 > ℹ️ Para un uso optimo recomiendo agregar el ejecutable al PATH
