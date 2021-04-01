@@ -22,9 +22,8 @@ function ctrl_c(){
 function helpPanel(){
 	echo -e "\n${purpleColour}[*]${endColour}${grayColour} Uso: ./fastskan${endColour}"
 	echo -e "\n\t${yellowColour}[-s]${endColour} Server IP"
-	echo -e "\t${yellowColour}[-w]${endColour} Wordlist"
 	echo -e "\t${yellowColour}[-n]${endColour} Box Name"
-	echo -e "\n${purpleColour}[Example]${endColour} ./fastskan -s 10.10.10.10 -w wordlist.txt -n Jerry"
+	echo -e "\n${purpleColour}[Example]${endColour} ./fastskan -s 10.10.10.10 -n Jerry"
 	exit 0
 }
 
@@ -79,7 +78,7 @@ function startAttack(){
 	cd ${name}
 	mkdir FastSkan
 	cd FastSkan
-	nmap -sV -sC $ip -oN ${name}Nmap | grep -i "open" | cut -d '/' -f1 > /dev/null 2>&1 >> fast.txt
+	nmap -T5 --min-rate 5000 -p- $ip -oN ${name}Nmap | grep -i "open" | cut -d '/' -f1 > /dev/null 2>&1 >> fast.txt
 	echo -e "${yellowColour}[*]${endColour} File ${name}Nmap created"
 	
 #PORT80
@@ -87,12 +86,6 @@ function startAttack(){
 	if [[ $(cat fast.txt) =~ "80" ]]; then
 		
 		echo -e "\n${purpleColour}[*] Starting Port 80 Enumeration${endColour}"
-		
-		echo -e "$(tput setaf 3)·······················································" >> port80
-		echo -e "GOBUSTER - DIRS FOUND" >> port80
-		echo -e "·······················································$(tput sgr 0)" >> port80
-		echo -e "\n${yellowColour}  [*] Fuzzing Directories${endColour}\n"	
-		gobuster dir -u $ip -w $wordlist -t 50 | grep -i "Status" >> port80
 		
 		echo -e "\n${yellowColour}  [*] Starting WhatWeb Skan${endColour}\n"
 		echo -e "\n " >> port80
@@ -162,7 +155,7 @@ function startAttack(){
 		echo -e "$(tput setaf 3)·······················································" >> port139
 		echo -e "NMAP - SMB ENUM" >> port139
 		echo -e "·······················································$(tput sgr 0)" >> port139
-		nmap --script smb-enum-*,smb-vuln-*,smb-ls.nse,smb-mbenum.nse,smb-os-discovery.nse,smb-print-text.nse,smb-psexec.nse,smb-security-mode.nse,smb-server-stats.nse,smb-system-info.nse,smb-protocols -p 139 $ip >> port139
+		nmap --script smb-enum-*,smb-vuln-*,smb-mbenum.nse,smb-os-discovery.nse,smb-system-info.nse -p 139 $ip >> port139
 		
 		echo -e "\n${yellowColour}  [*] Smbclient Enum${endColour}"
 		echo -e "\n " >> port139
@@ -176,7 +169,7 @@ function startAttack(){
 		echo -e "$(tput setaf 3)·······················································" >> port139
 		echo -e "ENUM4LINUX - COMPLETE ENUM" >> port139
 		echo -e "·······················································$(tput sgr 0)" >> port139
-		enum4linux -a $ip >> port139
+		enum4linux smb $ip >> port139
 		
 	fi
 	
@@ -211,7 +204,7 @@ function startAttack(){
 		echo -e "$(tput setaf 3)·······················································" >> port445
 		echo -e "NMAP - SMB ENUM" >> port445
 		echo -e "·······················································$(tput sgr 0)" >> port445
-		nmap --script smb-enum-*,smb-vuln-*,smb-ls.nse,smb-mbenum.nse,smb-os-discovery.nse,smb-print-text.nse,smb-psexec.nse,smb-security-mode.nse,smb-server-stats.nse,smb-system-info.nse,smb-protocols -p 445 $ip > /dev/null 2>&1 >> port445
+		nmap --script smb-enum-*,smb-vuln-*,smb-mbenum.nse,smb-os-discovery.nse,smb-system-info.nse -p 445 $ip > /dev/null 2>&1 >> port445
 		
 		echo -e "\n${yellowColour}  [*] Smbclient Enum${endColour}"
 		echo -e "\n " >> port445
@@ -225,7 +218,7 @@ function startAttack(){
 		echo -e "$(tput setaf 3)·······················································" >> port445
 		echo -e "ENUM4LINUX - COMPLETE ENUM" >> port445
 		echo -e "·······················································$(tput sgr 0)" >> port445
-		enum4linux -a $ip >> port445
+		enum4linux smb $ip >> port445
 		
 	fi
 	
@@ -237,19 +230,17 @@ function startAttack(){
 #Main
 
 if [ "$(id -u)" == "0" ]; then
-	declare -i parameter_counter=0; while getopts ":s:w:h:n:" arg; do
+	declare -i parameter_counter=0; while getopts ":s:h:n:" arg; do
 		case $arg in
 			s) ip=$OPTARG; let parameter_counter+=1;;
-			w) wordlist=$OPTARG; let parameter_counter+=1;;
 			h) helpPanel;;
 			n) name=$OPTARG ; parameter_counter+=1;;
 		esac
 	done
 	
-	if [ $parameter_counter -ne 3 ]; then
+	if [ $parameter_counter -ne 2 ]; then
 		helpPanel
 	else
-		dependencies
 		startAttack
 		notify-send "Hey," "Fast-Skan has ended"
 		tput cnorm
