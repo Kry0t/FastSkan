@@ -21,8 +21,7 @@ Fast Skan es una herramienta muy sencilla hecha en bash con la finalidad de auto
 
 ## Herramientas Necesarias
 
-* nmap 
-* gobuster 
+* nmap  
 * whatweb 
 * smbclient 
 * rpcclient 
