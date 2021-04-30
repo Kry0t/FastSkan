@@ -78,7 +78,7 @@ function startAttack(){
 	cd ${name}
 	mkdir FastSkan
 	cd FastSkan
-	nmap -T5 --min-rate 5000 -p- $ip -oN ${name}Nmap | grep -i "open" | cut -d '/' -f1 > /dev/null 2>&1 >> fast.txt
+	nmap --min-rate 5000 -sV -Pn -sC $ip -oN ${name}Nmap | grep -i "open" | cut -d '/' -f1 > /dev/null 2>&1 >> fast.txt
 	echo -e "${yellowColour}[*]${endColour} File ${name}Nmap created"
 	
 #PORT80
